@@ -1,0 +1,19 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "graham.cooper33@gmail.com",
+    "longName": "Reaction",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "shortName": "Reaction",
+    "uuid": "1c10798e-841d-4eb9-a6b0-92effb588071",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": false
+    }
+}
