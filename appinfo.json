@@ -9,6 +9,7 @@
     "resources": {
         "media": []
     },
+    "sdkVersion": "2",
     "shortName": "Reaction",
     "uuid": "1c10798e-841d-4eb9-a6b0-92effb588071",
     "versionCode": 1,

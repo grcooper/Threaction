@@ -11,7 +11,7 @@ static int round_counter;
 static int score;
 static AppTimer *app_timer;
 static bool stop;
-
+static bool endGame;
 
 static void hard_reset(void){
   counter = 0;
@@ -46,44 +46,69 @@ char *itoa(int num) {
   return string;
 }
 
-static void appTimerCallback(void *data){
-  counter++;
-  char *buffer;
-  buffer = itoa(counter/10);
-  
-  text_layer_set_text(text_layer, buffer);
-  if(!stop){
-    app_timer = app_timer_register(1, appTimerCallback, window);
-  } 
+char *itoa2(int num) {
+  static char buff[20] = {};
+  int i = 0, temp_num = num, length = 0;
+  char *string = buff;
+  if(num >= 0) {
+    // count how many characters in the number
+    while(temp_num) {
+      temp_num /= 10;
+      length++;
+    }
+    // assign the number to the buffer starting at the end of the 
+    // number and going to the begining since we are doing the
+    // integer to character conversion on the last number in the
+    // sequence
+    for(i = 0; i < length; i++) {
+      buff[(length-1)-i] = '0' + (num % 10);
+      num /= 10;
+    }
+    buff[i] = '\0'; // can't forget the null byte to properly end our string
+    }
+  else{
+    return "Unsupported Number";
+  }
+  return string;
 }
 
-static void up_click_handler(ClickRecognizerRef recognizer, void *context) {
-  if(stop){
+static void appTimerCallback(void *data){
+  if(!stop){
+    counter++;
+    text_layer_set_text(text_layer, itoa(counter));
+    app_timer = app_timer_register(1, appTimerCallback, window);
+  }
+}
+
+static void up_click_handler(ClickRecognizerRef recognizer, void *context){
+  if(endGame){
+    hard_reset();
+    endGame = false;
+    text_layer_set_text(text_layer, "Press UP");
+    text_layer_set_text(score_text_layer, "0");
+  }
+  else{
     stop = false;
     round_counter++;
     app_timer = app_timer_register(1, appTimerCallback, window);
   }
 }
 
-static void down_click_handler(ClickRecognizerRef recognizer, void *context) {
-  if(!stop){
-    if(round_counter != 0){
-      score += abs((counter/10) - 333);
-      char *s_buffer;
-      s_buffer = itoa(score);
-      text_layer_set_text(score_text_layer, s_buffer);
-    }
+static void down_click_handler(ClickRecognizerRef recognizer, void *context){
+  if(round_counter > 0){
+    int tscore = counter - 3333;
+    score += (tscore > 0) ? tscore : -tscore;
+    text_layer_set_text(score_text_layer, itoa2(score));
+    round_counter++;
     if(round_counter < 4){
-      round_counter++;
       counter = 0;
       app_timer = app_timer_register(1, appTimerCallback, window);
     }
     else {
-      char *score_buffer;
-      score_buffer = itoa(score);
-      text_layer_set_text(score_text_layer, score_buffer);
-      APP_LOG(APP_LOG_LEVEL_INFO, "Score buffer should be here");
-      hard_reset();
+      stop = true;
+      text_layer_set_text(text_layer, "Final Score:");
+      text_layer_set_text(score_text_layer, itoa2(score));
+      endGame = true;
     }
   }
 }
@@ -102,14 +127,14 @@ static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  text_layer = text_layer_create((GRect) { .origin = { 0, 72 }, .size = { bounds.size.w, 20 } });
-  text_layer_set_text(text_layer, "Press UP to Start");
+  text_layer = text_layer_create((GRect) { .origin = { 0, 60}, .size = { bounds.size.w, 30 } });
+  text_layer_set_text(text_layer, "Press UP");
   
-  instr_text_layer = text_layer_create((GRect){.origin = {0,0}, .size= {bounds.size.w, 20}});
-  text_layer_set_text(instr_text_layer, "Get Close to 333");
+  instr_text_layer = text_layer_create((GRect){.origin = {0,0}, .size= {bounds.size.w, 30}});;
+  text_layer_set_text(instr_text_layer, "Get Close to 3333");
   
-  score_text_layer = text_layer_create((GRect){.origin = {0,100}, .size= {bounds.size.w, 20}});
-  text_layer_set_text(score_text_layer, "SCORE HERE");
+  score_text_layer = text_layer_create((GRect){.origin = {0,90}, .size= {bounds.size.w, 30}});
+  text_layer_set_text(score_text_layer, "0");
   
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
   layer_add_child(window_layer, text_layer_get_layer(text_layer));
@@ -137,6 +162,7 @@ static void init(void) {
   });
   const bool animated = true;
   hard_reset();
+  endGame = false;
   window_stack_push(window, animated);
 }
 
