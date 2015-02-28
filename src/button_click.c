@@ -126,14 +126,19 @@ static void click_config_provider(void *context) {
 static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
-
-  text_layer = text_layer_create((GRect) { .origin = { 0, 60}, .size = { bounds.size.w, 30 } });
+  GFont titleFont = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
+  GFont otherFont = fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD);
+  
+  text_layer = text_layer_create((GRect) { .origin = { 0, 60}, .size = { bounds.size.w, 60} });
+  text_layer_set_font(text_layer, otherFont);
   text_layer_set_text(text_layer, "Press UP");
   
-  instr_text_layer = text_layer_create((GRect){.origin = {0,0}, .size= {bounds.size.w, 30}});;
+  instr_text_layer = text_layer_create((GRect){.origin = {0,0}, .size= {bounds.size.w, 60}});
+  text_layer_set_font(instr_text_layer, titleFont);
   text_layer_set_text(instr_text_layer, "Get Close to 3333");
   
-  score_text_layer = text_layer_create((GRect){.origin = {0,90}, .size= {bounds.size.w, 30}});
+  score_text_layer = text_layer_create((GRect){.origin = {0,100}, .size= {bounds.size.w, 30}});
+  text_layer_set_font(score_text_layer, otherFont);
   text_layer_set_text(score_text_layer, "0");
   
   text_layer_set_text_alignment(text_layer, GTextAlignmentCenter);
@@ -175,3 +180,7 @@ int main(void) {
   app_event_loop();
   deinit();
 }
+
+
+
+
