@@ -3,14 +3,21 @@
     "capabilities": [
         ""
     ],
-    "companyName": "graham.cooper33@gmail.com",
-    "longName": "Reaction",
+    "companyName": "Graham Cooper",
+    "longName": "Threaction",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "images/target.png",
+                "menuIcon": true,
+                "name": "TARGET_MENU",
+                "type": "png"
+            }
+        ]
     },
     "sdkVersion": "2",
-    "shortName": "Reaction",
+    "shortName": "Threaction",
     "uuid": "1c10798e-841d-4eb9-a6b0-92effb588071",
     "versionCode": 1,
     "versionLabel": "1.0",

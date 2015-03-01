@@ -80,46 +80,39 @@ static void appTimerCallback(void *data){
   }
 }
 
-static void up_click_handler(ClickRecognizerRef recognizer, void *context){
+static void down_click_handler(ClickRecognizerRef recognizer, void *context){
   if(endGame){
     hard_reset();
     endGame = false;
-    text_layer_set_text(text_layer, "Press UP");
+    text_layer_set_text(text_layer, "Press Down");
     text_layer_set_text(score_text_layer, "0");
   }
   else{
-    stop = false;
-    round_counter++;
-    app_timer = app_timer_register(1, appTimerCallback, window);
-  }
-}
-
-static void down_click_handler(ClickRecognizerRef recognizer, void *context){
-  if(round_counter > 0){
-    int tscore = counter - 3333;
-    score += (tscore > 0) ? tscore : -tscore;
-    text_layer_set_text(score_text_layer, itoa2(score));
-    round_counter++;
-    if(round_counter < 4){
-      counter = 0;
-      app_timer = app_timer_register(1, appTimerCallback, window);
+    if(round_counter > 0){
+      int tscore = counter - 3333;
+      score += (tscore > 0) ? tscore : -tscore;
+      text_layer_set_text(score_text_layer, itoa2(score));
+      round_counter++;
+      if(round_counter < 4){
+        counter = 0;
+        app_timer = app_timer_register(1, appTimerCallback, window);
+      }
+      else {
+        stop = true;
+        text_layer_set_text(text_layer, "Final Score:");
+        text_layer_set_text(score_text_layer, itoa2(score));
+        endGame = true;
+      }
     }
     else {
-      stop = true;
-      text_layer_set_text(text_layer, "Final Score:");
-      text_layer_set_text(score_text_layer, itoa2(score));
-      endGame = true;
+      stop = false;
+      round_counter++;
+      app_timer = app_timer_register(1, appTimerCallback, window);
     }
   }
-}
-
-static void select_click_handler(ClickRecognizerRef recognizer, void *context){
-  hard_reset();
 }
 
 static void click_config_provider(void *context) {
-  window_single_click_subscribe(BUTTON_ID_SELECT, select_click_handler);
-  window_single_click_subscribe(BUTTON_ID_UP, up_click_handler);
   window_single_click_subscribe(BUTTON_ID_DOWN, down_click_handler);
 }
 
@@ -131,9 +124,9 @@ static void window_load(Window *window) {
   
   text_layer = text_layer_create((GRect) { .origin = { 0, 60}, .size = { bounds.size.w, 60} });
   text_layer_set_font(text_layer, otherFont);
-  text_layer_set_text(text_layer, "Press UP");
+  text_layer_set_text(text_layer, "Press Down");
   
-  instr_text_layer = text_layer_create((GRect){.origin = {0,0}, .size= {bounds.size.w, 60}});
+  instr_text_layer = text_layer_create((GRect){.origin = {0,10}, .size= {bounds.size.w, 60}});
   text_layer_set_font(instr_text_layer, titleFont);
   text_layer_set_text(instr_text_layer, "Get Close to 3333");
   
